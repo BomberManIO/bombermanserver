@@ -11,7 +11,6 @@ var PendingGame = require("./entities/pending_game");
 var PowerupIDs = require("./common/powerup_ids");
 var games = {};
 
-io = require("socket.io").listen(server);
 TILE_SIZE = 40;
 
 // Game objects
@@ -23,7 +22,12 @@ var updateInterval = 100; // Broadcast updates every 100 ms.
 
 // Serve up index.html.
 app.use(express.static("public"));
-server.listen(3000);
+var server = app.listen(3000);
+
+io = require("socket.io").listen(server);
+
+
+
 
 
 function onClientDisconnect() {
@@ -274,7 +278,7 @@ function broadcastingLoop() {
 
 
 
-// init();
+init();
 
 function init() {
 	Lobby.initialize();
