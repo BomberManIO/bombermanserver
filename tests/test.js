@@ -1,7 +1,8 @@
 'use strict';
 
-describe('Tests app', function() {
-  it('verifies get', function(done) {
-  })
-    
+describe('Tests app', function() { 
+  //mocha sample test
+  it('should be true', function() {
+  }
+  );
 });
