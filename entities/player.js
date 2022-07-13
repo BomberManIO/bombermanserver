@@ -4,7 +4,7 @@ var Player = function(xSpawn, ySpawn, facing, id, color, address = "") {
 	this.x = xSpawn;
 	this.y = ySpawn;
 	this.facing = facing;
-	this.customId = id;
+	this.id = id;
 	this.color = color;
 	this.adress = address;
 	this.wins = 0;

@@ -1,6 +1,5 @@
 var express = require("express");
 var app = express();
-var server = require("http").Server(app);
 var Player = require("./entities/player");
 var Bomb = require("./entities/bomb");
 var Map = require("./entities/map");
@@ -33,7 +32,7 @@ app.post('/', function(req, res) {
 });
 
 // Serve up index.html.
-var server = app.listen(3000);
+var server = app.listen(8000);
 
 io = require("socket.io").listen(server);
 
@@ -58,11 +57,11 @@ function onClientDisconnect() {
 	} else if(lobbySlots[this.gameId].state == "inprogress") {
 		var game = games[this.gameId];
 	
-		if(this.customId in game.players) {
-			console.log("deleting " + this.customId);
-			delete game.players[this.customId];
+		if(this.id in game.players) {
+			console.log("deleting " + this.id);
+			delete game.players[this.id];
 	
-			io.in(this.gameId).emit("remove player", {id: this.customId});	
+			io.in(this.gameId).emit("remove player", {id: this.id});	
 		}
 
 		if(game.numPlayers < 2) {
@@ -123,14 +122,14 @@ function onRegisterMap(data) {
 };
 
 function onMovePlayer(data) {
-	console.log("Player " + this.customId + " moved to " + data.direction);
+	console.log("Player " + this.id + " moved to " + data.direction);
 	var game = games[this.gameId];
 
 	if(game === undefined || game.awaitingAcknowledgements) {
 		return;
 	}
 
-	var movingPlayer = game.players[this.customId];
+	var movingPlayer = game.players[this.id];
 
 	// Moving player can be null if a player is killed and leftover movement signals come through.
 	if(!movingPlayer) {
@@ -146,7 +145,7 @@ function onMovePlayer(data) {
 function onPlaceBomb(data) {
 	console.log("Placed Bomb...");
 	var game = games[this.gameId];
-	var player = game.players[this.customId];
+	var player = game.players[this.id];
 
 	if(game === undefined || game.awaitingAcknowledgements || player.numBombsAlive >= player.bombCapacity) {
 		return;
@@ -189,7 +188,7 @@ function onPowerupOverlap(data) {
 		return;
 	}
 
-	var player = games[this.gameId].players[this.customId];
+	var player = games[this.gameId].players[this.id];
 
 	if(powerup.powerupType === PowerupIDs.BOMB_STRENGTH) {
 		player.bombStrength++;
@@ -197,7 +196,7 @@ function onPowerupOverlap(data) {
 		player.bombCapacity++;
 	}
 
-	io.in(this.gameId).emit("powerup acquired", {acquiringPlayerId: this.customId, powerupId: powerup.id, powerupType: powerup.powerupType});
+	io.in(this.gameId).emit("powerup acquired", {acquiringPlayerId: this.id, powerupId: powerup.id, powerupType: powerup.powerupType});
 };
 
 function handlePlayerDeath(deadPlayerIds, gameId) {
@@ -260,14 +259,14 @@ function onRegister(account) {
 }
 
 function onReadyForRound() {
-	console.log("Player " + this.customId + " is ready for round");
+	console.log("Player " + this.id + " is ready for round");
 	var game = games[this.gameId];
 
 	if(!game.awaitingAcknowledgements) {
 		return;
 	}
 
-	game.acknowledgeRoundReadinessForPlayer(this.customId);
+	game.acknowledgeRoundReadinessForPlayer(this.id);
 
 	if(game.numRoundReadinessAcknowledgements >= game.numPlayers) {
 		game.awaitingAcknowledgements = false;
@@ -289,7 +288,7 @@ function broadcastingLoop() {
 
 
 
-init();
+// init();
 
 function init() {
 	Lobby.initialize();
