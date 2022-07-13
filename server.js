@@ -1,6 +1,5 @@
 var express = require("express");
 var app = express();
-var server = require("http").Server(app);
 var Player = require("./entities/player");
 var Bomb = require("./entities/bomb");
 var Map = require("./entities/map");
